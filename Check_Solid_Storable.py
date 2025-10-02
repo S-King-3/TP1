@@ -1,4 +1,4 @@
-import propellant_tank_calculations as Calcs
+import propellant_tank as Calcs
 import Mass_functions as Mfunc
 import numpy as np
 from typing import Tuple
