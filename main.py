@@ -1,6 +1,6 @@
 import mass_estimation_part2 as me2
 import Mass_functions as Mfunc
-import thrust_convergance as tc
+import Thrust_convergence as tc
 import Check_Solid_and_Storables as css
 import Fairing_area as fa
 import export_fn as exp
