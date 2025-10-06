@@ -1,22 +1,30 @@
-from dictionaries import (Isp_values)
+import numpy as np
+
+from typing import Tuple
+from dictionaries import Isp_values
 
 
-def mass_estimation(X, prop1, prop2):
-    import numpy as np
-    import matplotlib.pyplot as plt
+def mass_estimation(
+        X           : float,
+        mixture_1   : str,
+        mixture_2   : str,
+    )-> Tuple[float, float, float, float]:
     """
     Calculates relevant mass values for use in heuristics from stage 1 dV fraction, X
     
     Inputs:
-    X (float): stage 1 dV fraction
-    prop1 (string): stage 1 Propellant Mixture
-    prop2 (string): stage 2 Propellant Mixture
+    X           (float) : stage 1 dV fraction percentage
+    mixture_1   (string): stage 1 Propellant Mixture
+    mixture_2   (string): stage 2 Propellant Mixture
 
 
     Outputs:
-    m_pr_1 (float): mass of stage 1 propellant
-    m_pr_2 (float): mass of stage 2 propellant
-    m_0 (float): total mass of the LV  
+    m_pr_1  (float): mass of stage 1 propellant
+    m_pr_2  (float): mass of stage 2 propellant
+    m_0     (float): total mass of the LV 
+    m_0_2  (float): total mass of stage 2
+
+    Using the stage 1 delta V fraction, find the gross mass 
     """
     #knowns
     dv_req = 12300 #m/s
@@ -28,8 +36,11 @@ def mass_estimation(X, prop1, prop2):
     stage_1_dv = dv_req * (X / 100)
     stage_2_dv = dv_req * (1 - X/100)
 
-    stage_1_Isp = Isp_values[prop1]
-    stage_2_Isp = Isp_values[prop2]
+    stage_1_Isp = Isp_values[mixture_1]
+    stage_2_Isp = Isp_values[mixture_2]
+
+    # print(f'Debug - {stage_1_Isp}')
+    # print(f'Debug - {stage_2_Isp}')
 
 
     ## Stage 2
@@ -64,6 +75,9 @@ def mass_estimation(X, prop1, prop2):
     m_in_1 = delta_1 * m_0
     m_pr_1 = m_0 - m_in_1 - m_pl_1
 
+    print(f'Stage 1 Inert Mass Estimate: {m_in_1:.3f} (kg)')
+    print(f'Stage 2 Inert Mass Estimate: {m_in_2:.3f} (kg)')
+
     #Overwrite edge case if there is a negative mass (non-physical)
     if m_0 < 0:
         m_in_1 = np.nan
@@ -72,10 +86,22 @@ def mass_estimation(X, prop1, prop2):
         m_pr_2 = np.nan
         m_0 = np.nan
 
-    return m_pr_1, m_pr_2, m_0
+    # print(f"Debug - m_pr_1: {m_pr_1}")
+    # print(f"Debug - m_pr_2: {m_pr_2}")
+    # print(f"Debug - m_0: {m_0}")
+    # print(f"Debug - m_0_2: {m_0_2}")
 
+    return m_pr_1, m_pr_2, m_0, m_0_2
 
+def stage_nre_cost(m_in):
+    """
+    Estimate the total non-recurring engineering (NRE) cost of a launch vehicle stage
 
+    Input:
+    m_in (float): Inert mass of stage (kg)
 
-
-
+    Return:
+    stage_cost (float): Cost of stage (millions of dollars, 2025)
+    """
+    stage_cost = 13.52 * pow(m_in, 0.55)
+    return stage_cost

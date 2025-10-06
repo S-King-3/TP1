@@ -1,14 +1,13 @@
 from typing import Tuple, Dict
 import numpy as np
 from scipy.optimize import fsolve
+from dictionaries import fuel_ratios, prop_densities
 
 def find_prop_mass_volume(
         propellant_mass: float, 
         oxidizer: str, 
         fuel: str, 
         mixture: str, 
-        fuel_ratios: Dict[str, float],
-        prop_densities: Dict[str, float]
     ) -> Tuple[float, float, float, float]:
     """
     Input:
@@ -188,9 +187,14 @@ def find_tank_mass(
         tank_m = find_tank_mass(10000, 'LH2') 
     """
 
-    propellant = propellant.upper()
-    if propellant not in ['LH2', '']:
-        raise ValueError('Unsupported Propellant type, use LH2 or leave blank')
+    if propellant not in [
+        'LH2',
+        'LOX',
+        'LCH4',
+        'RP1',
+        'Solid',
+        'Storables']:
+        raise ValueError('Unsupported Propellant type')
     if not isinstance(tank_amount, int) or tank_amount < 1:
         raise ValueError('Tank amount must be positive integer (defaults to 1)')
     
@@ -226,9 +230,14 @@ def find_insulation_mass(
         # LH2
         total_insulation_m = find_insulation_mass(10000, propellant = 'LH2')
     """
-    propellant = propellant.upper()
-    if propellant not in ['LH2', '']:
-        raise ValueError('Unsupported Propellant type, use LH2 or leave blank')
+    if propellant not in [
+        'LH2',
+        'LOX',
+        'LCH4',
+        'RP1',
+        'Solid',
+        'Storables']:
+        raise ValueError('Unsupported Propellant type')
     if not isinstance(tank_amount, int) or tank_amount < 1:
         raise ValueError('Tank amount must be positive integer (defaults to 1)')
 

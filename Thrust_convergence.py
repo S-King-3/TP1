@@ -89,7 +89,7 @@ def thrust_convergance(
         stage_2_thrust_req_0 = stage_2_thrust_req
 
         # obtain new gross masses
-        stage_1_gross_mass, stage_2_gross_mass = thrust_mass_calculations(
+        stage_1_gross_mass, stage_2_gross_mass, _ = thrust_mass_calculations(
             m_pr_1,
             m_pr_2,
             m_pl,
@@ -112,7 +112,20 @@ def thrust_convergance(
 
         # if within tolerance break, we found the required thrust
         if thrust_dif_1 < tolerance and thrust_dif_2 < tolerance:
+            # Print final engine counts after convergence
+            stage_1_engine_count = math.ceil(stage_1_thrust_req / Thrust_stage1[stage_1_mixture])
+            stage_2_engine_count = math.ceil(stage_2_thrust_req / Thrust_stage2[stage_2_mixture])
+            print(f'Stage 1 engine count: {stage_1_engine_count}')
+            print(f'Stage 2 engine count: {stage_2_engine_count}')
+            print('----------------------------------------')
+            print(f'Stage 1 thrust: {stage_1_thrust_req/1000:.3f} (Kilo-Newtons)')
+            print(f'Stage 2 thrust: {stage_2_thrust_req/1000:.3f} (Kilo-Newtons)')
+            print(f'Stage 1 thrust weight ratio: {stage_1_thrust_req/(stage_1_gross_mass*9.81):.3f} ')
+            print(f'Stage 2 thrust weight ratio: {stage_2_thrust_req/(stage_2_gross_mass*9.81):.3f} ')
             break
+
+        iterations += 1
+
 
     return stage_1_thrust_req, stage_2_thrust_req
 
@@ -126,7 +139,7 @@ def thrust_mass_calculations(
         stage_2_thrust_req      : float,
         stage_1_mixture         : str,
         stage_2_mixture         : str,
-        )-> Tuple[float, float]:
+        )-> Tuple[float, float, list[float]]:
     """
     Inputs:
         m_pr_1                  (float) : propellant mass,
@@ -142,6 +155,7 @@ def thrust_mass_calculations(
     Outputs:
         stage_1_total_mass      (float) : total mass of stage 1
         stage_2_total_mass      (float) : total mass of stage 2
+        X                   list(float) : list of masses from each component
 
 
     This code finds the masses of components that depend 
@@ -172,4 +186,6 @@ def thrust_mass_calculations(
     stage_2_total_mass = m_pr_2 + stage_2_other_masses + stage_2_total_engine_mass + stage_2_gimbal_mass + stage_2_thrust_struct_mass + m_pl
     stage_1_total_mass = m_pr_1 + stage_1_other_masses + stage_1_total_engine_mass + stage_1_gimbal_mass + stage_1_thrust_struct_mass + stage_2_total_mass
 
-    return stage_1_total_mass, stage_2_total_mass
+    X = [stage_1_total_engine_mass, stage_2_total_engine_mass, stage_1_thrust_struct_mass, stage_2_thrust_struct_mass, stage_1_gimbal_mass, stage_2_gimbal_mass]
+
+    return stage_1_total_mass, stage_2_total_mass, X
