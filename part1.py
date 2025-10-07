@@ -230,8 +230,8 @@ def main():
     """
 
     #Test cases:
-    test_Isp1 = 366  # specific impulse of stage 1 (sec)
-    test_Isp2 = 366  # specific impulse of stage 2 (sec)
+    test_Isp1 = 285  # specific impulse of stage 1 (sec)
+    test_Isp2 = 269  # specific impulse of stage 2 (sec)
 
     #Find and report min mass across dV plots
 
